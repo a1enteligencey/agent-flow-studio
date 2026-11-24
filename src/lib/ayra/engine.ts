@@ -326,3 +326,10 @@ export function phaseProgress(tasks: { phase: PhaseId; done: boolean }[], phase:
 export function currentPhase(tasks: { phase: PhaseId; done: boolean }[]): PhaseId | null {
   return PHASES.find((p) => tasks.some((t) => t.phase === p.id && !t.done))?.id ?? null;
 }
+
+/** How far a mission is through the 8-step flow, 0–100. linesInStage = lines the current step has. */
+export function missionProgress(m: Pick<Mission, "status" | "stageIndex" | "step">, linesInStage: number): number {
+  if (m.status === "completed") return 100;
+  const within = linesInStage > 0 ? Math.min(m.step / linesInStage, 1) : 0;
+  return Math.round(((m.stageIndex + within) / STAGES.length) * 100);
+}

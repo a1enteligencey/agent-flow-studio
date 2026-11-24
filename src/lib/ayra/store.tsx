@@ -89,6 +89,7 @@ type Action =
   | { type: "launch"; input: LaunchInput }
   | { type: "approve"; id: string; now: number }
   | { type: "reject"; id: string; now: number }
+  | { type: "stop"; id: string; now: number }
   | { type: "deleteMission"; id: string }
   | { type: "clearHistory" }
   | { type: "reset" }
@@ -211,7 +212,7 @@ export function addLiveEvents(state: AyraState, events: LiveEvent[]): AyraState 
   return { ...state, logs };
 }
 
-function reducer(state: AyraState, action: Action): AyraState {
+export function reducer(state: AyraState, action: Action): AyraState {
   switch (action.type) {
     case "hydrate":
       return {
@@ -273,6 +274,25 @@ function reducer(state: AyraState, action: Action): AyraState {
       );
       return { ...state, missions, agents: releaseAgents(state.agents, missions) };
     }
+    case "stop": {
+      const target = state.missions.find((m) => m.id === action.id && ACTIVE.includes(m.status));
+      if (!target) return state;
+      const missions = state.missions.map((m) =>
+        m.id === target.id ? { ...m, status: "rejected" as const, finishedAt: action.now } : m,
+      );
+      const seq = state.logSeq + 1;
+      const line: LogLine = {
+        id: `log-${seq}`,
+        ts: action.now,
+        missionId: target.id,
+        missionCode: target.code,
+        stage: STAGES[target.stageIndex]?.id ?? "execute",
+        agent: "Owner",
+        level: "error",
+        text: "Stopped by Owner",
+      };
+      return { ...state, missions, agents: releaseAgents(state.agents, missions), logs: [line, ...state.logs].slice(0, MAX_LOGS), logSeq: seq };
+    }
     case "deleteMission": {
       const missions = state.missions.filter((m) => m.id !== action.id);
       return { ...state, missions, agents: releaseAgents(state.agents, missions) };
@@ -306,6 +326,7 @@ interface AyraContextValue {
   launch: (prompt: string, intent?: Intent, actions?: ActionKind[]) => Mission["code"];
   approve: (id: string) => void;
   reject: (id: string) => void;
+  stop: (id: string) => void;
   deleteMission: (id: string) => void;
   clearHistory: () => void;
   resetAll: () => void;
@@ -430,6 +451,7 @@ export function AyraProvider({ children }: { children: ReactNode }) {
       launch,
       approve: (id) => dispatch({ type: "approve", id, now: Date.now() }),
       reject: (id) => dispatch({ type: "reject", id, now: Date.now() }),
+      stop: (id) => dispatch({ type: "stop", id, now: Date.now() }),
       deleteMission: (id) => dispatch({ type: "deleteMission", id }),
       clearHistory: () => dispatch({ type: "clearHistory" }),
       resetAll: () => dispatch({ type: "reset" }),

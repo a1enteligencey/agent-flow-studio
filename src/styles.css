@@ -72,6 +72,19 @@
   --animate-line-in: line-in 0.45s ease-out both;
   --animate-scan: scan 6s linear infinite;
   --animate-blink: blink 1s steps(2, start) infinite;
+  --animate-grid-move: grid-move 3s linear infinite;
+  --animate-stripes: stripes 1s linear infinite;
+
+  @keyframes grid-move {
+    to {
+      background-position: 0 48px;
+    }
+  }
+  @keyframes stripes {
+    to {
+      background-position: 20px 0;
+    }
+  }
 
   @keyframes spin-reverse {
     to {
@@ -176,6 +189,38 @@
     linear-gradient(oklch(0.8 0.135 182 / 0.05) 1px, transparent 1px),
     linear-gradient(90deg, oklch(0.8 0.135 182 / 0.05) 1px, transparent 1px);
   background-size: 40px 40px;
+}
+
+/* Angled HUD frame corners, like the AYRA workspace reference. */
+@utility clip-chamfer {
+  clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%, 0 18px);
+}
+
+@utility clip-chamfer-sm {
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+
+@utility hud-glow {
+  filter: drop-shadow(0 0 10px oklch(0.8 0.135 182 / 0.35));
+}
+
+@utility grid-floor {
+  background-image:
+    linear-gradient(oklch(0.8 0.135 182 / 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.8 0.135 182 / 0.35) 1px, transparent 1px);
+  background-size: 48px 48px;
+  transform: perspective(380px) rotateX(62deg);
+  transform-origin: bottom center;
+  mask-image: linear-gradient(to top, black 10%, transparent 85%);
+}
+
+@utility progress-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--primary) 0 6px,
+    var(--primary-glow) 6px 10px
+  );
+  background-size: 20px 100%;
 }
 
 @utility glow {
