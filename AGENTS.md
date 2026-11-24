@@ -28,3 +28,10 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## AYRA app rules
+- Domain logic (intent classification, Owner gate, stage lines) lives in pure functions in src/lib/ayra/engine.ts so it stays testable; tests in src/test/ayra-engine.test.ts.
+- App state is one reducer in src/lib/ayra/store.tsx (AyraProvider in __root), persisted to browser localStorage key `ayra.state.v1`; the live log is session-only. Why: user chose browser-only storage for now.
+- The live agent workflow is a client-side simulation (1.1s tick); no real AYRA backend is connected yet. Randomness and ids are generated in event handlers/intervals and passed into the reducer to keep it pure.
+- Every editable collection page uses the generic src/components/ayra/EntityManager.tsx (field config → add/edit/delete); new modules should reuse it. Why: user wants every module manually editable in one consistent way.
+- Visual system: dark-only teal HUD tokens in src/styles.css (Orbitron display, Exo 2 body, JetBrains Mono logs); panels use HudPanel with teal corner blocks.
