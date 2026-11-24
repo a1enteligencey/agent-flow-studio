@@ -1,4 +1,4 @@
-import type { Agent, Gate, ModelRoute, Module, Settings } from "./types";
+import type { Agent, Gate, ModelRoute, Module, PhaseId, RoadmapTask, Settings } from "./types";
 
 type M = Omit<Module, "id">;
 const mods: M[] = [
@@ -75,3 +75,38 @@ export const SEED_AGENTS: Agent[] = withIds("agt", agents).map((a) => ({
 export const SEED_MODELS: ModelRoute[] = withIds("mdl", models);
 export const SEED_GATES: Gate[] = withIds("gate", gates);
 export const SEED_SETTINGS: Settings = { approvalCostLimit: 0.5, dailyBudget: 10, autopilot: true };
+
+const tasks: [PhaseId, string, string][] = [
+  ["0", "Install Docker on the VPS", "L0"],
+  ["0", "Set up PostgreSQL + pgvector", "L2"],
+  ["0", "Install Node.js runtime", "L0"],
+  ["0", "Add DATABASE_URL and LLM keys", "L1"],
+  ["0", "Worker executes a task", "L0"],
+  ["0", "Verify all 23 routes", "L10"],
+  ["1", "L0 Kernel running", "L0"],
+  ["1", "L2 basic memory (persists across sessions)", "L2"],
+  ["1", "L3 Tool Bus — register 3 tools via MCP", "L3"],
+  ["1", "L6 LangGraph workflows", "L6"],
+  ["2", "L5 OpenHands coding agent", "L5"],
+  ["2", "Firecracker microVM isolation", "L5"],
+  ["2", "Holdout test verification", "L5"],
+  ["3", "L4 UI-TARS booking (cloud fallback)", "L4"],
+  ["3", "L7 DSPy weekly prompt optimization", "L7"],
+  ["3", "L10 Langfuse full tracing", "L10"],
+  ["3", "L6 RAGEN RL policies for top 10 roles", "L6"],
+  ["4", "L9 Marketplace live", "L9"],
+  ["4", "x402 payments working", "L9"],
+  ["4", "First external customer", "L9"],
+  ["5", "L7 full self-improvement", "L7"],
+  ["5", "L8 voice", "L8"],
+  ["5", "L6 RL across 300 roles", "L6"],
+];
+
+export const SEED_TASKS: RoadmapTask[] = tasks.map(([phase, title, layer], i) => ({
+  id: `task-${i + 1}`,
+  title,
+  phase,
+  layer,
+  done: false,
+  notes: "",
+}));

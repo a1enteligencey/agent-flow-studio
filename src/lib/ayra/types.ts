@@ -118,3 +118,13 @@ export interface LogLine {
   level: LogLevel;
   text: string;
 }
+
+export type PhaseId = "0" | "1" | "2" | "3" | "4" | "5";
+export interface RoadmapTask {
+  id: string;
+  title: string;
+  phase: PhaseId;
+  layer: string;
+  done: boolean;
+  notes: string;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { classifyIntent, detectActions, evaluateGate } from "@/lib/ayra/engine";
+import { classifyIntent, currentPhase, detectActions, evaluateGate, phaseProgress } from "@/lib/ayra/engine";
 import { SEED_GATES } from "@/lib/ayra/seed";
 
 describe("Owner gate", () => {
@@ -35,5 +35,24 @@ describe("Classify", () => {
 
   it("falls back to GENERAL", () => {
     expect(classifyIntent("hello there")).toBe("GENERAL");
+  });
+});
+
+describe("Roadmap progress", () => {
+  const tasks = [
+    { phase: "0" as const, done: true },
+    { phase: "0" as const, done: false },
+    { phase: "1" as const, done: false },
+  ];
+
+  it("shows the share of ticked tasks in a phase", () => {
+    expect(phaseProgress(tasks, "0")).toBe(50);
+    expect(phaseProgress(tasks, "2")).toBe(0);
+  });
+
+  it("puts the Owner in the first phase with unfinished work", () => {
+    expect(currentPhase(tasks)).toBe("0");
+    expect(currentPhase(tasks.map((t) => (t.phase === "0" ? { ...t, done: true } : t)))).toBe("1");
+    expect(currentPhase(tasks.map((t) => ({ ...t, done: true })))).toBeNull();
   });
 });

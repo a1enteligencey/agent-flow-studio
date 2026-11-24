@@ -3,6 +3,7 @@ import {
   Boxes,
   Cpu,
   Gauge,
+  ListChecks,
   Rocket,
   Settings2,
   ShieldCheck,
@@ -28,6 +29,7 @@ import { useAyra } from "@/lib/ayra/store";
 const MAIN = [
   { title: "Command Center", url: "/", icon: Gauge },
   { title: "Missions", url: "/missions", icon: Rocket },
+  { title: "Roadmap", url: "/roadmap", icon: ListChecks },
 ] as const;
 
 const BUILD = [

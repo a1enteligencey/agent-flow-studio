@@ -15,6 +15,7 @@ import { Route as GatesRouteImport } from './routes/gates'
 import { Route as MissionsRouteImport } from './routes/missions'
 import { Route as ModelsRouteImport } from './routes/models'
 import { Route as ModulesRouteImport } from './routes/modules'
+import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as SettingsRouteImport } from './routes/settings'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,6 +48,11 @@ const ModulesRoute = ModulesRouteImport.update({
   path: '/modules',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoadmapRoute = RoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/missions': typeof MissionsRoute
   '/models': typeof ModelsRoute
   '/modules': typeof ModulesRoute
+  '/roadmap': typeof RoadmapRoute
   '/settings': typeof SettingsRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/missions': typeof MissionsRoute
   '/models': typeof ModelsRoute
   '/modules': typeof ModulesRoute
+  '/roadmap': typeof RoadmapRoute
   '/settings': typeof SettingsRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/missions': typeof MissionsRoute
   '/models': typeof ModelsRoute
   '/modules': typeof ModulesRoute
+  '/roadmap': typeof RoadmapRoute
   '/settings': typeof SettingsRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/missions'
     | '/models'
     | '/modules'
+    | '/roadmap'
     | '/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/missions'
     | '/models'
     | '/modules'
+    | '/roadmap'
     | '/settings'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/missions'
     | '/models'
     | '/modules'
+    | '/roadmap'
     | '/settings'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +130,7 @@ export interface RootRouteChildren {
   MissionsRoute: typeof MissionsRoute
   ModelsRoute: typeof ModelsRoute
   ModulesRoute: typeof ModulesRoute
+  RoadmapRoute: typeof RoadmapRoute
   SettingsRoute: typeof SettingsRoute
 }
 
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModulesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/roadmap': {
+      id: '/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof RoadmapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings': {
       id: '/settings'
       path: '/settings'
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   MissionsRoute: MissionsRoute,
   ModelsRoute: ModelsRoute,
   ModulesRoute: ModulesRoute,
+  RoadmapRoute: RoadmapRoute,
   SettingsRoute: SettingsRoute,
 }
 export const routeTree = rootRouteImport

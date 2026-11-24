@@ -13,11 +13,12 @@ import {
   pickModel,
   stageLines,
 } from "./engine";
-import { SEED_AGENTS, SEED_GATES, SEED_MODELS, SEED_MODULES, SEED_SETTINGS } from "./seed";
+import { SEED_AGENTS, SEED_GATES, SEED_MODELS, SEED_MODULES, SEED_SETTINGS, SEED_TASKS } from "./seed";
 import type {
   ActionKind,
   Agent,
   Gate,
+  RoadmapTask,
   Intent,
   LogLine,
   Mission,
@@ -31,6 +32,7 @@ export interface Collections {
   agents: Agent;
   models: ModelRoute;
   gates: Gate;
+  tasks: RoadmapTask;
 }
 export type CollectionKey = keyof Collections;
 
@@ -39,6 +41,7 @@ export interface AyraState {
   agents: Agent[];
   models: ModelRoute[];
   gates: Gate[];
+  tasks: RoadmapTask[];
   settings: Settings;
   missions: Mission[];
   logs: LogLine[];
@@ -54,6 +57,7 @@ export const initialState: AyraState = {
   agents: SEED_AGENTS,
   models: SEED_MODELS,
   gates: SEED_GATES,
+  tasks: SEED_TASKS,
   settings: SEED_SETTINGS,
   missions: [],
   logs: [],

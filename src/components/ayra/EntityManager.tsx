@@ -63,6 +63,7 @@ interface EntityManagerProps<T extends { id: string }> {
   searchKeys: (keyof T & string)[];
   filter?: { key: keyof T & string; label: string; options: FieldOption[] };
   sort?: (a: T, b: T) => number;
+  wrapTitle?: boolean;
 }
 
 type Draft = Record<string, unknown>;
@@ -80,6 +81,7 @@ export function EntityManager<T extends { id: string }>({
   searchKeys,
   filter,
   sort,
+  wrapTitle = false,
 }: EntityManagerProps<T>) {
   const [query, setQuery] = useState("");
   const [filterValue, setFilterValue] = useState("ALL");
@@ -190,7 +192,7 @@ export function EntityManager<T extends { id: string }>({
           >
             <span aria-hidden className="absolute left-0 top-0 h-2 w-2 bg-primary opacity-0 transition-opacity group-hover:opacity-100" />
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-              <h3 className="truncate font-display text-sm font-semibold uppercase tracking-wider">
+              <h3 className={cn("font-display text-sm font-semibold uppercase tracking-wider", wrapTitle ? "break-words leading-snug" : "truncate")}>
                 {getTitle(item)}
               </h3>
               <div className="flex shrink-0 gap-1">

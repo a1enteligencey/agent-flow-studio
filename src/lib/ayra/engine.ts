@@ -7,6 +7,7 @@ import type {
   LogLevel,
   Mission,
   ModelRoute,
+  PhaseId,
   StageId,
 } from "./types";
 
@@ -304,3 +305,24 @@ export const SAMPLE_PROMPTS = [
   "Build a landing page for the AYRA marketplace and deploy it",
   "Compare Letta and Agent-OS-Kernel for tiered memory",
 ];
+
+export const PHASES: { id: PhaseId; name: string; when: string; exit: string }[] = [
+  { id: "0", name: "Base", when: "Weeks 1–2", exit: "AYRA can run a simple end-to-end task on its own" },
+  { id: "1", name: "Foundation Workers", when: "Weeks 3–8", exit: "3 tools registered via MCP, memory persists across sessions" },
+  { id: "2", name: "Factory v1", when: "Weeks 9–16", exit: "AYRA builds and verifies a small project autonomously" },
+  { id: "3", name: "Frontier Additions", when: "Months 5–12", exit: "Booking works end-to-end; 10 roles RL-trained" },
+  { id: "4", name: "Commerce", when: "Months 13–24", exit: "First paid transaction completed" },
+  { id: "5", name: "Autonomy", when: "Months 25–48", exit: "AYRA ships improvements weekly with Owner approval" },
+];
+
+/** Share of ticked tasks in a phase, 0–100, rounded. Empty phase counts as 0. */
+export function phaseProgress(tasks: { phase: PhaseId; done: boolean }[], phase: PhaseId): number {
+  const inPhase = tasks.filter((t) => t.phase === phase);
+  if (inPhase.length === 0) return 0;
+  return Math.round((inPhase.filter((t) => t.done).length / inPhase.length) * 100);
+}
+
+/** The first phase that still has unticked tasks — where the Owner is now. */
+export function currentPhase(tasks: { phase: PhaseId; done: boolean }[]): PhaseId | null {
+  return PHASES.find((p) => tasks.some((t) => t.phase === p.id && !t.done))?.id ?? null;
+}
