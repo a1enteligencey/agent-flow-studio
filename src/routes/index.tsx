@@ -14,6 +14,7 @@ import { HudPanel } from "@/components/ayra/HudPanel";
 import { WorkflowPipeline } from "@/components/ayra/WorkflowPipeline";
 import { AgentOrbit } from "@/components/ayra/AgentOrbit";
 import { LiveFeed } from "@/components/ayra/LiveFeed";
+import { LiveBadge } from "@/components/ayra/LiveBadge";
 import { ApprovalQueue } from "@/components/ayra/ApprovalQueue";
 import { MissionLauncher } from "@/components/ayra/MissionLauncher";
 import { StatusBadge } from "@/components/ayra/StatusBadge";
@@ -266,7 +267,12 @@ function CommandCenter() {
 
       {/* Feed + approvals */}
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <HudPanel kicker="Trace" title="Live activity" action={<Link to="/missions" className="font-mono text-[11px] uppercase tracking-widest text-primary hover:underline">All missions</Link>}>
+        <HudPanel kicker="Trace" title="Live activity" action={
+            <span className="flex items-center gap-3">
+              <LiveBadge />
+              <Link to="/missions" className="font-mono text-[11px] uppercase tracking-widest text-primary hover:underline">All missions</Link>
+            </span>
+          }>
           <LiveFeed logs={state.logs} height="h-96" />
         </HudPanel>
         <HudPanel kicker="Human gate" title="Waiting for you">

@@ -13,6 +13,8 @@ import {
   pickModel,
   stageLines,
 } from "./engine";
+import { fetchLiveFeed } from "./live.functions";
+import type { LiveEvent } from "./live";
 import { SEED_AGENTS, SEED_GATES, SEED_MODELS, SEED_MODULES, SEED_SETTINGS, SEED_TASKS } from "./seed";
 import type {
   ActionKind,
@@ -20,6 +22,7 @@ import type {
   Gate,
   RoadmapTask,
   Intent,
+  LiveStatus,
   LogLine,
   Mission,
   ModelRoute,
@@ -46,7 +49,10 @@ export interface AyraState {
   missions: Mission[];
   logs: LogLine[];
   logSeq: number;
+  live: LiveStatus;
 }
+
+const LIVE_OFF: LiveStatus = { state: "off", lastSync: null, message: "", eventCount: 0 };
 
 const STORAGE_KEY = "ayra.state.v1";
 const MAX_LOGS = 250;
@@ -62,6 +68,7 @@ export const initialState: AyraState = {
   missions: [],
   logs: [],
   logSeq: 0,
+  live: LIVE_OFF,
 };
 
 export interface LaunchInput {
@@ -85,7 +92,9 @@ type Action =
   | { type: "deleteMission"; id: string }
   | { type: "clearHistory" }
   | { type: "reset" }
-  | { type: "tick"; now: number };
+  | { type: "tick"; now: number }
+  | { type: "liveEvents"; events: LiveEvent[] }
+  | { type: "liveStatus"; status: LiveStatus };
 
 function upsert<T extends { id: string }>(list: T[], item: T): T[] {
   const exists = list.some((x) => x.id === item.id);
@@ -187,10 +196,32 @@ export function tick(state: AyraState, now: number): AyraState {
   };
 }
 
+/** Adds new outside-studio events to the live log, skipping ones already shown. */
+export function addLiveEvents(state: AyraState, events: LiveEvent[]): AyraState {
+  const seen = new Set(state.logs.map((l) => l.id));
+  const fresh: LogLine[] = [];
+  for (const e of events) {
+    const id = `live-${e.id}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    fresh.push({ id, ts: e.ts, missionId: "live", missionCode: e.workflow, stage: e.stage, agent: e.agent, level: e.level, text: e.text });
+  }
+  if (fresh.length === 0) return state;
+  const logs = [...fresh.sort((a, b) => b.ts - a.ts), ...state.logs].sort((a, b) => b.ts - a.ts).slice(0, MAX_LOGS);
+  return { ...state, logs };
+}
+
 function reducer(state: AyraState, action: Action): AyraState {
   switch (action.type) {
     case "hydrate":
-      return { ...state, ...action.state, logs: [], logSeq: 0 };
+      return {
+        ...state,
+        ...action.state,
+        settings: { ...state.settings, ...action.state.settings },
+        logs: [],
+        logSeq: 0,
+        live: LIVE_OFF,
+      };
     case "save":
       return { ...state, [action.key]: upsert(state[action.key] as { id: string }[], action.item) };
     case "delete":
@@ -252,6 +283,10 @@ function reducer(state: AyraState, action: Action): AyraState {
       return { ...initialState, logs: [], logSeq: state.logSeq };
     case "tick":
       return tick(state, action.now);
+    case "liveEvents":
+      return addLiveEvents(state, action.events);
+    case "liveStatus":
+      return { ...state, live: action.status };
   }
 }
 
@@ -298,7 +333,7 @@ export function AyraProvider({ children }: { children: ReactNode }) {
   // Save everything except the live log.
   useEffect(() => {
     if (!hydratedRef.current) return;
-    const { logs: _logs, logSeq: _seq, ...rest } = state;
+    const { logs: _logs, logSeq: _seq, live: _live, ...rest } = state;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
     } catch {
@@ -332,13 +367,58 @@ export function AyraProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "tick", now: Date.now() });
       const s = stateRef.current;
       const running = s.missions.filter((m) => m.status === "running").length;
-      if (s.settings.autopilot && running < 2 && (ticks === 2 || ticks % 14 === 0)) {
+      if (s.settings.autopilot && !s.settings.liveEnabled && running < 2 && (ticks === 2 || ticks % 14 === 0)) {
         const prompt = SAMPLE_PROMPTS[Math.floor(Math.random() * SAMPLE_PROMPTS.length)] ?? "Summarize today";
         launch(prompt);
       }
     }, 1100);
     return () => window.clearInterval(timer);
   }, [launch]);
+
+  // Real activity: poll the Owner's workflow tool while the live connection is on.
+  const { liveEnabled, liveUrl, liveKey } = state.settings;
+  useEffect(() => {
+    if (!liveEnabled || !liveUrl.trim()) {
+      dispatch({ type: "liveStatus", status: LIVE_OFF });
+      return;
+    }
+    let stopped = false;
+    let timer: number | undefined;
+    let total = 0;
+    dispatch({ type: "liveStatus", status: { state: "connecting", lastSync: null, message: "Connecting…", eventCount: 0 } });
+    const poll = async () => {
+      try {
+        const res = await fetchLiveFeed({ data: { url: liveUrl, key: liveKey } });
+        if (stopped) return;
+        if (res.ok) {
+          total = Math.max(total, res.events.length);
+          dispatch({ type: "liveEvents", events: res.events });
+          dispatch({
+            type: "liveStatus",
+            status: {
+              state: "connected",
+              lastSync: Date.now(),
+              message: res.events.length ? "Receiving activity" : "Connected — no activity yet",
+              eventCount: total,
+            },
+          });
+        } else {
+          dispatch({ type: "liveStatus", status: { state: "error", lastSync: Date.now(), message: res.error ?? "Connection failed", eventCount: total } });
+        }
+      } catch {
+        if (!stopped) {
+          dispatch({ type: "liveStatus", status: { state: "error", lastSync: Date.now(), message: "Couldn't reach the studio.", eventCount: total } });
+        }
+      }
+      if (!stopped) timer = window.setTimeout(poll, 4000);
+    };
+    // Wait a moment so typing the address doesn't fire many requests.
+    timer = window.setTimeout(poll, 600);
+    return () => {
+      stopped = true;
+      window.clearTimeout(timer);
+    };
+  }, [liveEnabled, liveUrl, liveKey]);
 
   const value = useMemo<AyraContextValue>(
     () => ({

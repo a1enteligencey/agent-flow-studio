@@ -74,7 +74,7 @@ export const SEED_AGENTS: Agent[] = withIds("agt", agents).map((a) => ({
 }));
 export const SEED_MODELS: ModelRoute[] = withIds("mdl", models);
 export const SEED_GATES: Gate[] = withIds("gate", gates);
-export const SEED_SETTINGS: Settings = { approvalCostLimit: 0.5, dailyBudget: 10, autopilot: true };
+export const SEED_SETTINGS: Settings = { approvalCostLimit: 0.5, dailyBudget: 10, autopilot: true, liveEnabled: false, liveUrl: "", liveKey: "" };
 
 const tasks: [PhaseId, string, string][] = [
   ["0", "Install Docker on the VPS", "L0"],

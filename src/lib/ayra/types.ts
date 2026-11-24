@@ -72,6 +72,17 @@ export interface Settings {
   approvalCostLimit: number;
   dailyBudget: number;
   autopilot: boolean;
+  /** Real activity feed from the Owner's workflow tool. */
+  liveEnabled: boolean;
+  liveUrl: string;
+  liveKey: string;
+}
+
+export interface LiveStatus {
+  state: "off" | "connecting" | "connected" | "error";
+  lastSync: number | null;
+  message: string;
+  eventCount: number;
 }
 
 export type StageId =

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { MissionLauncher } from "./MissionLauncher";
+import { LiveBadge } from "./LiveBadge";
 import { useAyra } from "@/lib/ayra/store";
 
 function Clock() {
@@ -39,6 +40,7 @@ export function TopBar() {
       </p>
       <div className="ml-auto flex items-center gap-3 md:gap-4">
         <Clock />
+        <LiveBadge />
         <label className="flex items-center gap-2 text-xs text-muted-foreground">
           <Switch
             checked={state.settings.autopilot}
