@@ -35,3 +35,5 @@ use the editor.
 - The live agent workflow is a client-side simulation (1.1s tick) unless the Owner sets a live activity address in Settings; then the store polls it every 4s through the `fetchLiveFeed` server function (src/lib/ayra/live.functions.ts, avoids browser CORS) and merges events into the live log. Feed parsing is the pure, tolerant `normalizeLiveEvents` in src/lib/ayra/live.ts because the studio's exact format is unknown. Randomness and ids are generated in event handlers/intervals and passed into the reducer to keep it pure.
 - Every editable collection page uses the generic src/components/ayra/EntityManager.tsx (field config → add/edit/delete); new modules should reuse it. Why: user wants every module manually editable in one consistent way.
 - Visual system: dark-only teal HUD tokens in src/styles.css (Orbitron display, Exo 2 body, JetBrains Mono logs); panels use HudPanel with teal corner blocks.
+
+- Command Center workspace presentation lives in src/components/ayra/workspace; it reuses the existing mission reducer and logs so visual changes do not introduce a second execution engine.

@@ -154,13 +154,13 @@ export function AgentCard({
         </div>
 
         <div className="mt-4 grid grid-cols-3 gap-2">
-          <Button size="sm" onClick={onRun} className="glow-sm">
+          <Button size="sm" onClick={onRun} className="glow-sm gap-1 px-1 text-[10px]">
             <Play className="fill-current" /> Run task
           </Button>
-          <Button size="sm" variant="outline" onClick={onStop} disabled={!running && !waiting}>
+          <Button size="sm" variant="outline" className="gap-1 px-1 text-[10px]" onClick={onStop} disabled={!running && !waiting}>
             <Square className="fill-current" /> Stop
           </Button>
-          <Button size="sm" variant="outline" onClick={onReset}>
+          <Button size="sm" variant="outline" className="gap-1 px-1 text-[10px]" onClick={onReset}>
             <RotateCcw /> Reset
           </Button>
         </div>
