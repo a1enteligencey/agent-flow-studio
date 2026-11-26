@@ -1,0 +1,13 @@
+import { useEffect, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+export const Route = createFileRoute("/reset-password")({ head: () => ({ meta: [{ title: "Reset password — AYRA" }, { name: "description", content: "Set a new password for your AYRA account." }, { property: "og:title", content: "Reset password — AYRA" }, { property: "og:description", content: "Recover access to your private AYRA workspace." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }), component: ResetPassword });
+function ResetPassword() {
+ const [valid, setValid] = useState(false); const [password, setPassword] = useState(""); const [confirm, setConfirm] = useState(""); const [message, setMessage] = useState(""); const [done, setDone] = useState(false); const [busy, setBusy] = useState(false);
+ useEffect(() => { const recovery = new URLSearchParams(window.location.hash.slice(1)).get("type") === "recovery"; const verify = async () => { const { data } = await supabase.auth.getUser(); setValid(recovery && Boolean(data.user)); }; void verify(); }, []);
+ const submit = async (e: React.FormEvent) => { e.preventDefault(); if (password !== confirm) { setMessage("Passwords do not match."); return; } setBusy(true); const { error } = await supabase.auth.updateUser({ password }); setBusy(false); if (error) setMessage("Couldn't reset your password. Request a new reset link."); else setDone(true); };
+ return <div className="mx-auto max-w-sm py-10"><h1 className="font-display text-2xl text-primary">Reset password</h1>{done ? <p className="mt-6 text-success">Password updated.</p> : valid ? <form className="mt-6 space-y-4" onSubmit={e => void submit(e)}><Label htmlFor="new-password">New password</Label><Input id="new-password" type="password" required minLength={8} autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} /><Label htmlFor="confirm-password">Confirm password</Label><Input id="confirm-password" type="password" required minLength={8} autoComplete="new-password" value={confirm} onChange={e => setConfirm(e.target.value)} /><Button type="submit" disabled={busy}>Update password</Button>{message && <p role="alert" className="text-sm text-destructive">{message}</p>}</form> : <p className="mt-6 text-sm text-muted-foreground">Open the password reset link from your email.</p>}<Button asChild variant="link" className="mt-4 px-0"><Link to="/auth">Back to sign in</Link></Button></div>;
+}

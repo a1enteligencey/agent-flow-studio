@@ -10,3 +10,6 @@
 - [x] Replace Command Center with the reference agent workspace layout, preserving teal colours and existing missions
 
 - [x] Polish Command Center colour, glow, information density and task-driven agent reactions
+
+- [ ] Add account sign-in and private cross-device sync for agents, modules and roadmap
+- [ ] Drive workspace missions and reactions from actual Studio events (real connection waits for Studio address)

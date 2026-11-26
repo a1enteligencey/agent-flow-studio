@@ -11,10 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AgentsRouteImport } from './routes/agents'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as GatesRouteImport } from './routes/gates'
 import { Route as MissionsRouteImport } from './routes/missions'
 import { Route as ModelsRouteImport } from './routes/models'
 import { Route as ModulesRouteImport } from './routes/modules'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as SettingsRouteImport } from './routes/settings'
 
@@ -26,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const AgentsRoute = AgentsRouteImport.update({
   id: '/agents',
   path: '/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GatesRoute = GatesRouteImport.update({
@@ -48,6 +55,11 @@ const ModulesRoute = ModulesRouteImport.update({
   path: '/modules',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RoadmapRoute = RoadmapRouteImport.update({
   id: '/roadmap',
   path: '/roadmap',
@@ -62,20 +74,24 @@ const SettingsRoute = SettingsRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agents': typeof AgentsRoute
+  '/auth': typeof AuthRoute
   '/gates': typeof GatesRoute
   '/missions': typeof MissionsRoute
   '/models': typeof ModelsRoute
   '/modules': typeof ModulesRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/roadmap': typeof RoadmapRoute
   '/settings': typeof SettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agents': typeof AgentsRoute
+  '/auth': typeof AuthRoute
   '/gates': typeof GatesRoute
   '/missions': typeof MissionsRoute
   '/models': typeof ModelsRoute
   '/modules': typeof ModulesRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/roadmap': typeof RoadmapRoute
   '/settings': typeof SettingsRoute
 }
@@ -83,10 +99,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/agents': typeof AgentsRoute
+  '/auth': typeof AuthRoute
   '/gates': typeof GatesRoute
   '/missions': typeof MissionsRoute
   '/models': typeof ModelsRoute
   '/modules': typeof ModulesRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/roadmap': typeof RoadmapRoute
   '/settings': typeof SettingsRoute
 }
@@ -95,30 +113,36 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/agents'
+    | '/auth'
     | '/gates'
     | '/missions'
     | '/models'
     | '/modules'
+    | '/reset-password'
     | '/roadmap'
     | '/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/agents'
+    | '/auth'
     | '/gates'
     | '/missions'
     | '/models'
     | '/modules'
+    | '/reset-password'
     | '/roadmap'
     | '/settings'
   id:
     | '__root__'
     | '/'
     | '/agents'
+    | '/auth'
     | '/gates'
     | '/missions'
     | '/models'
     | '/modules'
+    | '/reset-password'
     | '/roadmap'
     | '/settings'
   fileRoutesById: FileRoutesById
@@ -126,10 +150,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgentsRoute: typeof AgentsRoute
+  AuthRoute: typeof AuthRoute
   GatesRoute: typeof GatesRoute
   MissionsRoute: typeof MissionsRoute
   ModelsRoute: typeof ModelsRoute
   ModulesRoute: typeof ModulesRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   RoadmapRoute: typeof RoadmapRoute
   SettingsRoute: typeof SettingsRoute
 }
@@ -148,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/agents'
       fullPath: '/agents'
       preLoaderRoute: typeof AgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gates': {
@@ -178,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModulesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/roadmap': {
       id: '/roadmap'
       path: '/roadmap'
@@ -198,10 +238,12 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgentsRoute: AgentsRoute,
+  AuthRoute: AuthRoute,
   GatesRoute: GatesRoute,
   MissionsRoute: MissionsRoute,
   ModelsRoute: ModelsRoute,
   ModulesRoute: ModulesRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   RoadmapRoute: RoadmapRoute,
   SettingsRoute: SettingsRoute,
 }
