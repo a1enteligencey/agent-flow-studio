@@ -8,3 +8,5 @@
 - [ ] Connect the dashboard to the real AYRA backend on the VPS (waits on the VPS API being ready — Phase 0)
 
 - [x] Replace Command Center with the reference agent workspace layout, preserving teal colours and existing missions
+
+- [x] Polish Command Center colour, glow, information density and task-driven agent reactions

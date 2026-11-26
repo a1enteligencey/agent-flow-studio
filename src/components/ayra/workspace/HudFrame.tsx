@@ -18,8 +18,8 @@ export function HudFrame({
   const chamfer = small ? "clip-chamfer-sm" : "clip-chamfer";
   return (
     <div className={cn("hud-glow relative", className)}>
-      <div className={cn(chamfer, "h-full bg-primary/45 p-px")}>
-        <div className={cn(chamfer, "relative h-full bg-card", innerClassName)}>{children}</div>
+      <div className={cn(chamfer, "h-full bg-primary/70 p-px")}>
+        <div className={cn(chamfer, "relative h-full bg-card workspace-surface", innerClassName)}>{children}</div>
       </div>
       {accents && (
         <>

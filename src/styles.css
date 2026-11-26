@@ -141,13 +141,13 @@
   --card-foreground: oklch(0.965 0.008 190);
   --popover: oklch(0.2 0.028 206);
   --popover-foreground: oklch(0.965 0.008 190);
-  --primary: oklch(0.8 0.135 182);
+  --primary: oklch(0.84 0.15 182);
   --primary-foreground: oklch(0.16 0.03 205);
   --primary-glow: oklch(0.9 0.12 180);
   --secondary: oklch(0.24 0.03 205);
   --secondary-foreground: oklch(0.94 0.01 190);
   --muted: oklch(0.22 0.025 205);
-  --muted-foreground: oklch(0.72 0.03 195);
+  --muted-foreground: oklch(0.77 0.025 195);
   --accent: oklch(0.27 0.05 192);
   --accent-foreground: oklch(0.93 0.07 182);
   --destructive: oklch(0.66 0.2 25);
@@ -180,7 +180,7 @@
     transparent 100%
   );
   --shadow-glow: 0 0 24px -4px oklch(0.8 0.135 182 / 0.55);
-  --shadow-glow-sm: 0 0 12px -2px oklch(0.8 0.135 182 / 0.6);
+  --shadow-glow-sm: 0 0 18px -2px color-mix(in oklab, var(--primary) 65%, transparent);
   --shadow-panel: 0 20px 50px -30px oklch(0 0 0 / 0.9);
 }
 
@@ -201,7 +201,7 @@
 }
 
 @utility hud-glow {
-  filter: drop-shadow(0 0 10px oklch(0.8 0.135 182 / 0.35));
+  filter: drop-shadow(0 0 4px color-mix(in oklab, var(--primary) 55%, transparent)) drop-shadow(0 0 18px color-mix(in oklab, var(--primary) 22%, transparent));
 }
 
 @utility grid-floor {
@@ -287,4 +287,26 @@
       animation-iteration-count: 1 !important;
     }
   }
+}
+
+/* Workspace reactions stay presentational and follow the selected task. */
+@keyframes agent-breathe {
+  0%, 100% { transform: scale(1.025) translateY(0); }
+  50% { transform: scale(1.055) translateY(-2px); }
+}
+@keyframes agent-signal {
+  0%, 100% { transform: scaleY(0.25); opacity: 0.45; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+@utility agent-portrait-live {
+  animation: agent-breathe 5s ease-in-out infinite;
+}
+@utility agent-wave {
+  & > span { animation: agent-signal 900ms ease-in-out infinite alternate; }
+  & > span:nth-child(2n) { animation-delay: -450ms; }
+  & > span:nth-child(3n) { animation-delay: -200ms; }
+  & > span:nth-child(5n) { animation-delay: -650ms; }
+}
+@utility workspace-surface {
+  background-image: linear-gradient(135deg, color-mix(in oklab, var(--primary) 7%, transparent), transparent 65%);
 }
