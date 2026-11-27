@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Organize the existing agent roster into 20 pastel factory groups without changing the base dashboard or workflows
+
 - [x] AYRA Command Center UI in teal sci-fi style with live agent workflow
 - [x] Manual add / edit / delete for agents, modules, models and safety gates
 - [x] Phase 0–5 roadmap tracker page with tickable, editable tasks

@@ -37,3 +37,4 @@ use the editor.
 - Visual system: dark-only teal HUD tokens in src/styles.css (Orbitron display, Exo 2 body, JetBrains Mono logs); panels use HudPanel with teal corner blocks.
 
 - Command Center workspace presentation lives in src/components/ayra/workspace; it reuses the existing mission reducer and logs so visual changes do not introduce a second execution engine.
+- Factory groups are roster-only metadata in src/lib/ayra/factory.ts; derive legacy membership without replacing agent IDs or execution layers, and reuse EntityManager's optional grouping hooks so other collection pages keep their existing layout.

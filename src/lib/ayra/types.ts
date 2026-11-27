@@ -44,6 +44,9 @@ export interface Agent {
   model: string;
   status: AgentStatus;
   currentAction: string;
+  /** Optional roster-only metadata; existing execution layers are unchanged. */
+  factoryGroup?: string;
+  tools?: string;
 }
 
 export type ModelTier = "SLM" | "Mid" | "Frontier";

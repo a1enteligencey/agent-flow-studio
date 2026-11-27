@@ -310,3 +310,81 @@
 @utility workspace-surface {
   background-image: linear-gradient(135deg, color-mix(in oklab, var(--primary) 7%, transparent), transparent 65%);
 }
+
+/* Local factory identities only: the dark AYRA base theme is unchanged. */
+:root {
+  --factory-surface: #fcfdff;
+  --factory-ink: #172b49;
+  --factory-muted: #4a5d75;
+  --factory-line: #d7e0ea;
+  --factory-development: #c6e2ff;
+  --factory-qa: #d9edbc;
+  --factory-devops: #d1dafa;
+  --factory-security: #f7c7cc;
+  --factory-ai: #ded0f6;
+  --factory-seo: #bde9de;
+  --factory-leads: #f6e2ab;
+  --factory-sales: #ffd4b9;
+  --factory-support: #bce6f5;
+  --factory-hr: #f3cce6;
+  --factory-finance: #c0e3c7;
+  --factory-marketing: #ffccda;
+  --factory-product: #cce7f1;
+  --factory-data: #c4d1ed;
+  --factory-operations: #dbe6c6;
+  --factory-success: #c6f0e6;
+  --factory-legal: #e5d7ed;
+  --factory-research: #e2ddf8;
+  --factory-content: #f5dfcb;
+  --factory-governance: #d6e0e8;
+  --factory-ready: #216143;
+  --factory-working: #20557c;
+  --factory-waiting: #795315;
+}
+
+[data-factory="development"], .factory-development { --factory-color: var(--factory-development); }
+[data-factory="qa"], .factory-qa { --factory-color: var(--factory-qa); }
+[data-factory="devops"], .factory-devops { --factory-color: var(--factory-devops); }
+[data-factory="security"], .factory-security { --factory-color: var(--factory-security); }
+[data-factory="ai"], .factory-ai { --factory-color: var(--factory-ai); }
+[data-factory="seo"], .factory-seo { --factory-color: var(--factory-seo); }
+[data-factory="leads"], .factory-leads { --factory-color: var(--factory-leads); }
+[data-factory="sales"], .factory-sales { --factory-color: var(--factory-sales); }
+[data-factory="support"], .factory-support { --factory-color: var(--factory-support); }
+[data-factory="hr"], .factory-hr { --factory-color: var(--factory-hr); }
+[data-factory="finance"], .factory-finance { --factory-color: var(--factory-finance); }
+[data-factory="marketing"], .factory-marketing { --factory-color: var(--factory-marketing); }
+[data-factory="product"], .factory-product { --factory-color: var(--factory-product); }
+[data-factory="data"], .factory-data { --factory-color: var(--factory-data); }
+[data-factory="operations"], .factory-operations { --factory-color: var(--factory-operations); }
+[data-factory="success"], .factory-success { --factory-color: var(--factory-success); }
+[data-factory="legal"], .factory-legal { --factory-color: var(--factory-legal); }
+[data-factory="research"], .factory-research { --factory-color: var(--factory-research); }
+[data-factory="content"], .factory-content { --factory-color: var(--factory-content); }
+[data-factory="governance"], .factory-governance { --factory-color: var(--factory-governance); }
+
+.factory-identity { background: var(--factory-color); color: var(--factory-ink); }
+.factory-dot { background: var(--factory-color); border-color: var(--factory-ink); }
+.factory-heading { border-color: color-mix(in srgb, var(--factory-color) 35%, transparent); }
+.factory-agent {
+  /* Local semantic remapping keeps the shared card and controls theme-aware. */
+  --foreground: var(--factory-ink);
+  --muted-foreground: var(--factory-muted);
+  --background: var(--factory-surface);
+  --primary: var(--factory-ink);
+  --primary-foreground: var(--factory-surface);
+  --accent: var(--factory-color);
+  --accent-foreground: var(--factory-ink);
+  --border: var(--factory-line);
+  --success: var(--factory-ready);
+  --warning: var(--factory-waiting);
+  background: var(--factory-surface);
+  color: var(--factory-ink);
+  border-color: var(--factory-line);
+  border-top: 3px solid var(--factory-color);
+  letter-spacing: 0;
+}
+.factory-agent:hover { border-color: var(--factory-muted); }
+.factory-agent h3 { font-family: var(--font-sans); text-transform: none; letter-spacing: 0; font-size: 1rem; }
+.factory-label { color: var(--factory-ink); }
+.factory-tool { background: color-mix(in srgb, var(--factory-color) 35%, var(--factory-surface)); border-color: var(--factory-line); color: var(--factory-ink); }

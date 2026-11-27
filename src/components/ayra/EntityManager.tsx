@@ -37,6 +37,7 @@ import { cn } from "@/lib/utils";
 export interface FieldOption {
   value: string;
   label: string;
+  identity?: ReactNode;
 }
 
 export interface FieldDef<T> {
@@ -64,6 +65,11 @@ interface EntityManagerProps<T extends { id: string }> {
   filter?: { key: keyof T & string; label: string; options: FieldOption[] };
   sort?: (a: T, b: T) => number;
   wrapTitle?: boolean;
+  groupBy?: (item: T) => string;
+  renderGroupHeader?: (group: string, items: T[]) => ReactNode;
+  renderIdentity?: (item: T) => ReactNode;
+  cardClassName?: (item: T) => string;
+  validate?: (item: T) => string | null;
 }
 
 type Draft = Record<string, unknown>;
@@ -82,6 +88,11 @@ export function EntityManager<T extends { id: string }>({
   filter,
   sort,
   wrapTitle = false,
+  groupBy,
+  renderGroupHeader,
+  renderIdentity,
+  cardClassName,
+  validate,
 }: EntityManagerProps<T>) {
   const [query, setQuery] = useState("");
   const [filterValue, setFilterValue] = useState("ALL");
@@ -122,7 +133,10 @@ export function EntityManager<T extends { id: string }>({
       return;
     }
     const id = editingId ?? crypto.randomUUID();
-    onSave({ ...draft, id } as unknown as T);
+    const item = { ...draft, id } as unknown as T;
+    const validationError = validate?.(item);
+    if (validationError) { toast.error(validationError); return; }
+    onSave(item);
     toast.success(editingId ? `${itemLabel} updated` : `${itemLabel} added`);
     close();
   };
@@ -146,14 +160,14 @@ export function EntityManager<T extends { id: string }>({
         </div>
         {filter && (
           <Select value={filterValue} onValueChange={setFilterValue}>
-            <SelectTrigger className="bg-card/60 sm:w-52">
+            <SelectTrigger className="min-w-0 bg-card/60 sm:w-52 [&>span]:truncate">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All {filter.label}s</SelectItem>
               {filter.options.map((o) => (
                 <SelectItem key={o.value} value={o.value}>
-                  {o.label}
+                  <span className="flex items-center gap-2">{o.identity}<span>{o.label}</span></span>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -169,32 +183,39 @@ export function EntityManager<T extends { id: string }>({
       </p>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <button
+        <Button
           type="button"
+          variant="ghost"
           onClick={openNew}
-          className="group grid min-h-44 place-items-center rounded-lg border border-dashed border-primary/30 bg-card/30 p-6 text-center transition-all hover:border-primary hover:bg-primary/5"
+          className={cn("group grid h-auto min-h-44 place-items-center whitespace-normal rounded-lg border border-dashed border-primary/30 bg-card/30 p-6 text-center font-normal normal-case tracking-normal transition-all hover:border-primary hover:bg-primary/5", groupBy && "col-span-full min-h-14 p-2")}
         >
-          <span>
-            <span className="mx-auto grid h-11 w-11 place-items-center rounded-md border border-primary/40 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
+          <span className={cn(groupBy && "flex items-center gap-3")}>
+            <span className={cn("mx-auto grid h-11 w-11 place-items-center rounded-md border border-primary/40 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground", groupBy && "h-8 w-8")}>
               <Plus className="h-5 w-5" />
             </span>
-            <span className="mt-3 block font-display text-xs uppercase tracking-[0.18em] text-foreground">
+            <span className={cn("mt-3 block font-display text-xs uppercase tracking-[0.18em] text-foreground", groupBy && "mt-0")}>
               Add new {itemLabel}
             </span>
-            <span className="mt-1 block text-xs text-muted-foreground">Fill a simple form — done.</span>
+            {!groupBy && <span className="mt-1 block text-xs text-muted-foreground">Fill a simple form — done.</span>}
           </span>
-        </button>
+        </Button>
 
-        {visible.map((item) => (
+        {visible.flatMap((item, index) => [
+          ...(groupBy && renderGroupHeader && (index === 0 || groupBy(item) !== groupBy(visible[index - 1] ?? item))
+            ? [<div key={`group-${groupBy(item)}`} className="col-span-full">{renderGroupHeader(groupBy(item), items.filter(member => groupBy(member) === groupBy(item)))}</div>]
+            : []),
           <article
             key={item.id}
-            className="group relative flex flex-col rounded-lg border border-border bg-card/60 p-5 backdrop-blur transition-all hover:border-primary/50"
+            className={cn("group relative flex flex-col rounded-lg border border-border bg-card/60 p-5 backdrop-blur transition-all hover:border-primary/50", cardClassName?.(item))}
           >
             <span aria-hidden className="absolute left-0 top-0 h-2 w-2 bg-primary opacity-0 transition-opacity group-hover:opacity-100" />
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
-              <h3 className={cn("font-display text-sm font-semibold uppercase tracking-wider", wrapTitle ? "break-words leading-snug" : "truncate")}>
-                {getTitle(item)}
-              </h3>
+              <div className="flex min-w-0 items-start gap-2">
+                {renderIdentity?.(item)}
+                <h3 className={cn("min-w-0 font-display text-sm font-semibold uppercase tracking-wider", wrapTitle ? "break-words leading-snug" : "truncate")}>
+                  {getTitle(item)}
+                </h3>
+              </div>
               <div className="flex shrink-0 gap-1">
                 <Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Edit ${getTitle(item)}`} onClick={() => openEdit(item)}>
                   <Pencil />
@@ -211,8 +232,9 @@ export function EntityManager<T extends { id: string }>({
               </div>
             </div>
             <div className="mt-3 flex-1 text-sm">{renderCard(item)}</div>
-          </article>
-        ))}
+          </article>,
+        ])}
+        {visible.length === 0 && <p className="col-span-full py-5 text-sm text-muted-foreground">No {itemLabel.toLowerCase()}s in this selection.</p>}
       </div>
 
       <Dialog open={draft !== null} onOpenChange={(o) => !o && close()}>
@@ -270,7 +292,7 @@ export function EntityManager<T extends { id: string }>({
                         <SelectContent>
                           {(f.options ?? []).map((o) => (
                             <SelectItem key={o.value} value={o.value}>
-                              {o.label}
+                              <span className="flex items-center gap-2">{o.identity}<span>{o.label}</span></span>
                             </SelectItem>
                           ))}
                         </SelectContent>
